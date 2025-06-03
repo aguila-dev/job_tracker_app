@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "noImplicitAny": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./interface",
+      "./types"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"],
+      "@utils/*": ["utils/*.ts"],
+      "@interfaces/*": ["interface/*.ts"],
+      "@services/*": ["services/*.ts"],
+      "@types/*": ["types/*.ts"],
+      "@shared/*": ["../../shared/src/*"]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "types/**/*.d.ts",
+    ".env.ts",
+    "environment.d.ts",
+    "types/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

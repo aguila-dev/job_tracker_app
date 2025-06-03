@@ -1,0 +1,40 @@
+{
+  "name": "job-tracker-monorepo",
+  "version": "1.0.0",
+  "description": "Job application tracking application",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:backend": "cd packages/backend && npm run dev",
+    "dev:frontend": "cd packages/frontend && npm run dev",
+    "build": "npm-run-all --parallel build:*",
+    "build:backend": "cd packages/backend && npm run build",
+    "build:frontend": "cd packages/frontend && npm run build",
+    "test": "npm-run-all --parallel test:*",
+    "test:backend": "cd packages/backend && npm test",
+    "test:frontend": "cd packages/frontend && npm test",
+    "lint": "npm-run-all --parallel lint:*",
+    "lint:backend": "cd packages/backend && npm run lint",
+    "lint:frontend": "cd packages/frontend && npm run lint"
+  },
+  "keywords": [
+    "job",
+    "tracker",
+    "monorepo"
+  ],
+  "author": "aguilana",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^19.4.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.9",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.3.3",
+    "typescript": "^5.4.5"
+  }
+}

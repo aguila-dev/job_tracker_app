@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    container_name: jobs-frontend
+    volumes:
+      - ./packages/frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: jobs-backend
+    volumes:
+      - ./packages/backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/jobsdb
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13
+    container_name: jobs-database
+    environment:
+      POSTGRES_USER: ${LOCAL_PG_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${LOCAL_PG_DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${LOCAL_PG_DB_NAME_TEST:-jobsdb}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata:

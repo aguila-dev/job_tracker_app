@@ -1,0 +1,15 @@
+{
+  "name": "@job-tracker/shared",
+  "version": "1.0.0",
+  "description": "Shared code for job tracker application",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
