@@ -3,8 +3,12 @@ import {
   JobTableProps,
   UserAppliedJobs,
 } from '@/interface/IJobs';
-import { useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { useEffect, useState } from 'react';
+import { useAuth0Sync } from '@/hooks/useAuth0Sync';
+import { LoadingSpinner } from '@/ui';
+import { useAuth0 } from '@auth0/auth0-react';
+import { fetchApplicationsWithAuth0 } from '@/redux/slices/applicationSlice';
 
 import Search from '../components/Search';
 import JobRow from '../components/Table/JobRow';
@@ -177,12 +181,50 @@ const AppliedJobsComponent: React.FC = () => {
     'asc' | 'desc'
   >('desc');
 
-  const { data } = useAppSelector((state) => state.applications);
+  // Get user and auth data
+  const { isLoading: isUserLoading } = useAuth0Sync();
+  const { user } = useAppSelector(state => state.auth0);
+  const { getAccessTokenSilently } = useAuth0();
+  const dispatch = useAppDispatch();
+  
+  // Get application data from Redux store
+  const { data, loading: isJobsLoading } = useAppSelector((state) => state.applications);
 
+  // Refresh applications when the component mounts
+  useEffect(() => {
+    const refreshApplications = async () => {
+      if (user?.id) {
+        try {
+          const token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+              scope: 'openid profile email',
+            },
+          });
+          
+          dispatch(fetchApplicationsWithAuth0({ token, userId: user.id }));
+        } catch (error) {
+          console.error('Error refreshing applications:', error);
+        }
+      }
+    };
+    
+    refreshApplications();
+  }, [user?.id, getAccessTokenSilently, dispatch]);
+
+  // Update local state when Redux data changes
   useEffect(() => {
     const jobsList = data?.jobs ? data.jobs : [];
     setAppliedJobs(jobsList);
-  }, []);
+    
+    if (user) {
+      console.log('User data in AppliedJobs:', user);
+    }
+    
+    if (data) {
+      console.log('Application data in AppliedJobs:', data);
+    }
+  }, [data, user]);
 
   const filteredJobs = appliedJobs.filter(
     (appliedJob) =>
@@ -289,54 +331,78 @@ const AppliedJobsComponent: React.FC = () => {
           {appliedJobs.length}
         </span>
       </h2>
-      <Search
-        setSortOrder={setSortOrder}
-        setSearchQuery={setSearchQuery}
-        searchQuery={searchQuery}
-      />
-      <div className='mb-6 mt-6 flex justify-center space-x-2'>
-        <button
-          className={`rounded-xl px-6 py-3 font-medium transition-all ${
-            selectedTab === 'tracking'
-              ? 'bg-primary text-white shadow-md'
-              : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
-          }`}
-          onClick={() => setSelectedTab('tracking')}
-        >
-          Job Tracking
-        </button>
-        <button
-          className={`rounded-xl px-6 py-3 font-medium transition-all ${
-            selectedTab === 'noLongerConsidering'
-              ? 'bg-primary text-white shadow-md'
-              : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
-          }`}
-          onClick={() => setSelectedTab('noLongerConsidering')}
-        >
-          No Longer Considering
-        </button>
-      </div>
-      <div className='tab-content'>
-        {selectedTab === 'tracking' ? (
-          <JobTable
-            jobs={trackingJobs}
-            handleAppliedDateChange={handleAppliedDateChange}
-            handleStatusChange={handleStatusChange}
-            handleJobConsideration={handleJobConsideration}
-            handleAppliedDateSort={handleAppliedDateSort}
-            appliedDateSortOrder={appliedDateSortOrder}
+      
+      {/* Display user info if available */}
+      {user && (
+        <div className="mb-4 rounded-lg bg-neutral p-4 text-center">
+          <p className="text-gray-700">
+            <span className="font-medium">Logged in as:</span> {user.email}
+            {user.firstName && user.lastName && (
+              <span> ({user.firstName} {user.lastName})</span>
+            )}
+          </p>
+          {user.id && (
+            <p className="text-sm text-gray-500">User ID: {user.id}</p>
+          )}
+        </div>
+      )}
+      
+      {isUserLoading || isJobsLoading ? (
+        <div className="flex h-40 w-full items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          <Search
+            setSortOrder={setSortOrder}
+            setSearchQuery={setSearchQuery}
+            searchQuery={searchQuery}
           />
-        ) : (
-          <JobTable
-            jobs={noLongerConsideringJobs}
-            handleAppliedDateChange={handleAppliedDateChange}
-            handleStatusChange={handleStatusChange}
-            handleJobConsideration={handleJobConsideration}
-            handleAppliedDateSort={handleAppliedDateSort}
-            appliedDateSortOrder={appliedDateSortOrder}
-          />
-        )}
-      </div>
+          <div className='mb-6 mt-6 flex justify-center space-x-2'>
+            <button
+              className={`rounded-xl px-6 py-3 font-medium transition-all ${
+                selectedTab === 'tracking'
+                  ? 'bg-primary text-white shadow-md'
+                  : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
+              }`}
+              onClick={() => setSelectedTab('tracking')}
+            >
+              Job Tracking
+            </button>
+            <button
+              className={`rounded-xl px-6 py-3 font-medium transition-all ${
+                selectedTab === 'noLongerConsidering'
+                  ? 'bg-primary text-white shadow-md'
+                  : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
+              }`}
+              onClick={() => setSelectedTab('noLongerConsidering')}
+            >
+              No Longer Considering
+            </button>
+          </div>
+          <div className='tab-content'>
+            {selectedTab === 'tracking' ? (
+              <JobTable
+                jobs={trackingJobs}
+                handleAppliedDateChange={handleAppliedDateChange}
+                handleStatusChange={handleStatusChange}
+                handleJobConsideration={handleJobConsideration}
+                handleAppliedDateSort={handleAppliedDateSort}
+                appliedDateSortOrder={appliedDateSortOrder}
+              />
+            ) : (
+              <JobTable
+                jobs={noLongerConsideringJobs}
+                handleAppliedDateChange={handleAppliedDateChange}
+                handleStatusChange={handleStatusChange}
+                handleJobConsideration={handleJobConsideration}
+                handleAppliedDateSort={handleAppliedDateSort}
+                appliedDateSortOrder={appliedDateSortOrder}
+              />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

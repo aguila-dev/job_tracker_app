@@ -2,11 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import applicationsReducer from '../slices/applicationSlice';
-// import authReducer from '../slices/authSlice'
+import auth0Reducer from '../slices/auth0Slice';
 
 const store = configureStore({
   reducer: {
-    // auth: authReducer,
+    auth0: auth0Reducer,
     applications: applicationsReducer,
   },
 });

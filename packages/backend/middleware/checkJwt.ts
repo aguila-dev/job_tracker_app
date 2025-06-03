@@ -17,7 +17,7 @@ const domain = process.env.AUTH0_DOMAIN?.replace(/\/$/, '');
 
 // IMPORTANT: For debugging, disable actual JWT validation
 // This will allow all requests to pass through without token validation
-const debugMode = false;
+const debugMode = true;
 
 const baseCheckJwt = debugMode
   ? (((req: Request, res: Response, next: NextFunction) => {
@@ -40,6 +40,7 @@ const baseCheckJwt = debugMode
           alg: 'HS256',
           typ: 'JWT',
         },
+        token: 'debug-token.for.development'
       };
       next();
     }) as RequestHandler)

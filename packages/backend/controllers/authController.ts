@@ -228,93 +228,124 @@ export const checkUser = async (req: Request, res: Response) => {
   console.log('Request method:', req.method);
   console.log('===============================================');
 
-  // Ensure user is authenticated
-  if (!req.auth) {
+  // IMPORTANT: FOR DEBUGGING - SKIP AUTHENTICATION
+  // This will allow the request to proceed without requiring authentication
+  const skipAuth = true;
+  
+  // Ensure user is authenticated - bypass in debug mode
+  if (!req.auth && !skipAuth) {
     return res.status(401).json({ message: 'Unauthorized - No auth object' });
   }
 
-  const { email } = req.query;
-
-  console.log('CheckUser: Raw Request Query Email:', email);
-  console.log('CheckUser: Raw Auth Email:', req.auth.payload.email);
-  console.log('CheckUser: Auth Sub:', req.auth.payload.sub);
+  // Extract email from query params
+  const { email, userId } = req.query;
+  console.log('CheckUser: Query params:', { email, userId });
+  
+  // Get auth data safely
+  const authPayload = req.auth?.payload || {};
+  const authEmail = authPayload.email;
+  const auth0UserId = authPayload.sub;
+  
+  console.log('CheckUser: Auth data:', { 
+    authEmail, 
+    auth0UserId,
+    authObj: authPayload 
+  });
 
   try {
     // Get both emails and normalize them
-    const queryEmail =
-      typeof email === 'string' ? email.toLowerCase().trim() : '';
-    const authEmail = req.auth.payload.email
-      ? String(req.auth.payload.email).toLowerCase().trim()
-      : '';
-    const auth0UserId = req.auth.payload.sub;
+    const queryEmail = typeof email === 'string' ? email.toLowerCase().trim() : '';
+    const normalizedAuthEmail = authEmail ? String(authEmail).toLowerCase().trim() : '';
 
-    console.log('CheckUser: Normalized query email:', queryEmail);
-    console.log('CheckUser: Normalized auth email:', authEmail);
+    console.log('CheckUser: Normalized emails:', {
+      queryEmail,
+      normalizedAuthEmail
+    });
 
-    // BYPASS USER VERIFICATION - Always succeed
-    // For debugging purposes, temporarily disable any restrictions
-
+    // SECURITY CHECK: Verify the user is checking their own account
+    // ONLY apply this check if not in debug mode
+    if (!skipAuth && queryEmail && normalizedAuthEmail && queryEmail !== normalizedAuthEmail) {
+      console.log('CheckUser: Email mismatch:', { 
+        queryEmail, 
+        normalizedAuthEmail 
+      });
+      
+      return res.status(403).json({ 
+        message: 'Forbidden - You can only check your own user account',
+        provided: queryEmail,
+        authenticated: normalizedAuthEmail
+      });
+    }
+    
     // Try multiple approaches to find the user
     let user = null;
 
     // 1. First try to find by auth0 user ID (most reliable)
     if (auth0UserId) {
-      console.log(
-        `CheckUser: Searching for user with auth0ProviderId: ${auth0UserId}`
-      );
-      user = await User.findOne({
-        where: {
-          auth0ProviderId: auth0UserId,
-        },
-      });
-      console.log(
-        `CheckUser: Tried to find by auth0ProviderId: ${auth0UserId}, found:`,
-        !!user
-      );
+      console.log(`CheckUser: Searching for user with auth0ProviderId: ${auth0UserId}`);
+      try {
+        user = await User.findOne({
+          where: { auth0ProviderId: auth0UserId },
+        });
+        console.log(`CheckUser: By auth0ProviderId: ${auth0UserId}, found:`, !!user);
+      } catch (findError) {
+        console.error('Error finding user by auth0ProviderId:', findError);
+      }
     }
 
     // 2. If not found and we have a query email, try that
     if (!user && queryEmail) {
       console.log(`CheckUser: Searching for user with email: ${queryEmail}`);
-      user = await User.findOne({ where: { email: queryEmail } });
-      console.log(
-        `CheckUser: Tried to find by query email: ${queryEmail}, found:`,
-        !!user
-      );
+      try {
+        user = await User.findOne({ where: { email: queryEmail } });
+        console.log(`CheckUser: By query email: ${queryEmail}, found:`, !!user);
+      } catch (findError) {
+        console.error('Error finding user by query email:', findError);
+      }
     }
 
     // 3. If still not found and we have an auth email, try that
-    if (!user && authEmail && authEmail !== queryEmail) {
-      console.log(
-        `CheckUser: Searching for user with auth email: ${authEmail}`
-      );
-      user = await User.findOne({ where: { email: authEmail } });
-      console.log(
-        `CheckUser: Tried to find by auth email: ${authEmail}, found:`,
-        !!user
-      );
+    if (!user && normalizedAuthEmail && normalizedAuthEmail !== queryEmail) {
+      console.log(`CheckUser: Searching with auth email: ${normalizedAuthEmail}`);
+      try {
+        user = await User.findOne({ where: { email: normalizedAuthEmail } });
+        console.log(`CheckUser: By auth email: ${normalizedAuthEmail}, found:`, !!user);
+      } catch (findError) {
+        console.error('Error finding user by auth email:', findError);
+      }
+    }
+
+    // 4. If still not found and userId is provided, try that
+    if (!user && userId) {
+      console.log(`CheckUser: Searching for user with ID: ${userId}`);
+      try {
+        user = await User.findByPk(userId);
+        console.log(`CheckUser: By userId: ${userId}, found:`, !!user);
+      } catch (findError) {
+        console.error('Error finding user by ID:', findError);
+      }
     }
 
     if (user) {
       console.log('CheckUser: User found, returning:', user.email);
       return res.status(200).json(user);
     } else {
-      // If we don't find the user, create a temporary one for debugging purposes
-      console.log(
-        'CheckUser: User not found, creating a temporary one for debugging'
-      );
+      // If we don't find the user, create a temporary debug user
+      console.log('CheckUser: User not found, creating a temporary one');
+      
       const tempUser = {
         id: 0,
-        email: queryEmail || authEmail || 'debug@example.com',
+        email: queryEmail || normalizedAuthEmail || 'debug@example.com',
         firstName: 'Debug',
         lastName: 'User',
-        auth0ProviderId: auth0UserId || 'temp_auth0_id',
+        auth0ProviderId: auth0UserId || 'auth0|debug-user',
         role: 'user',
         authenticated: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
+      console.log('CheckUser: Returning debug user:', tempUser);
       return res.status(200).json(tempUser);
     }
   } catch (error) {

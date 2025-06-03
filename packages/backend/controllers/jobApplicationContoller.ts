@@ -69,9 +69,22 @@ export const createJobApplication = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { userId, jobId } = req.body;
-  console.log('userId', userId);
-  console.log('jobId', jobId);
+  const { userId, jobId, job } = req.body;
+  console.log('==== CREATE JOB APPLICATION ====');
+  console.log('userId:', userId);
+  console.log('jobId:', jobId);
+  console.log('job data:', job);
+  console.log('Auth object:', req.auth?.payload);
+  
+  // Safety check for required fields
+  if (!userId || !jobId) {
+    console.error('Missing required fields for job application');
+    return res.status(400).json({ 
+      message: 'Missing required fields: userId and jobId are required',
+      provided: { userId, jobId }
+    });
+  }
+  
   try {
     // Check if the application already exists
     const existingApplication = await JobApplication.findOne({
@@ -79,14 +92,56 @@ export const createJobApplication = async (
     });
 
     if (existingApplication) {
-      throw new CustomError('You have already applied for this job', 400);
+      console.log('User has already applied for this job:', {
+        userId,
+        jobId,
+        applicationId: existingApplication.id,
+        appliedAt: existingApplication.createdAt
+      });
+      
+      // Return 200 instead of error for better UX
+      return res.status(200).json({
+        message: 'You have already applied for this job',
+        application: existingApplication,
+        alreadyExists: true
+      });
     }
-    const application = await JobApplication.create({ userId, jobId });
-    console.log('application', application);
+    
+    // Create the application
+    console.log('Creating new job application for user:', userId);
+    const application = await JobApplication.create({ 
+      userId, 
+      jobId,
+      // Include additional fields from the job data if available
+      ...(job && {
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        description: job.description,
+        url: job.url
+      })
+    });
+    
+    console.log('Successfully created application:', application.id);
     res.status(201).json(application);
   } catch (err) {
     console.error('Error creating job application:', err);
-    res.status(500).json({ message: 'Failed to create job application' });
+    
+    // Better error handling with more details
+    if (err instanceof CustomError) {
+      return res.status(err.status || 400).json({ 
+        message: err.message,
+        error: 'custom_error' 
+      });
+    }
+    
+    // Database errors or other issues
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    res.status(500).json({ 
+      message: 'Failed to create job application', 
+      error: errorMessage,
+      details: err instanceof Error ? err.stack : undefined
+    });
   }
 };
 
