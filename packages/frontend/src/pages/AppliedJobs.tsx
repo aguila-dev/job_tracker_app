@@ -2,13 +2,13 @@ import {
   ApplicationStatus,
   JobTableProps,
   UserAppliedJobs,
-} from '@/interface/IJobs'
-import { useAppSelector } from '@/redux/store'
-import { useEffect, useState } from 'react'
+} from '@/interface/IJobs';
+import { useAppSelector } from '@/redux/store';
+import { useEffect, useState } from 'react';
 
-import Search from '../components/Search'
-import JobRow from '../components/Table/JobRow'
-import { updateJobProperty } from '../utils/updateJobProperty'
+import Search from '../components/Search';
+import JobRow from '../components/Table/JobRow';
+import { updateJobProperty } from '../utils/updateJobProperty';
 
 // JobTable Component
 const JobTable: React.FC<JobTableProps> = ({
@@ -19,28 +19,40 @@ const JobTable: React.FC<JobTableProps> = ({
   handleAppliedDateSort,
   appliedDateSortOrder,
 }) => (
-  <div className="overflow-x-auto">
+  <div className='overflow-x-auto'>
     {/* Desktop/Tablet View */}
-    <table className="hidden min-w-full overflow-hidden rounded-xl border-collapse text-sm shadow-card md:table">
+    <table className='hidden min-w-full overflow-hidden rounded-xl border-collapse text-sm shadow-card md:table'>
       <thead>
-        <tr className="bg-neutral">
-          <th className="border-b p-3 text-left font-semibold text-gray-700">Company</th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">Job Title</th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">Location</th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">
-            <button 
-              className="flex items-center font-semibold text-gray-700 focus:outline-none" 
+        <tr className='bg-neutral'>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            Company
+          </th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            Job Title
+          </th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            Location
+          </th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            <button
+              className='flex items-center font-semibold text-gray-700 focus:outline-none'
               onClick={handleAppliedDateSort}
             >
               Applied Date
-              <span className="ml-1">
+              <span className='ml-1'>
                 {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
               </span>
             </button>
           </th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">Notes</th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">Status</th>
-          <th className="border-b p-3 text-left font-semibold text-gray-700">No Longer Considering</th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            Notes
+          </th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            Status
+          </th>
+          <th className='border-b p-3 text-left font-semibold text-gray-700'>
+            No Longer Considering
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -55,54 +67,81 @@ const JobTable: React.FC<JobTableProps> = ({
         ))}
       </tbody>
     </table>
-    
+
     {/* Mobile View - Card-based layout */}
-    <div className="mt-4 grid grid-cols-1 gap-4 md:hidden">
+    <div className='mt-4 grid grid-cols-1 gap-4 md:hidden'>
       {jobs.map((job: UserAppliedJobs, index: number) => (
-        <div key={job.id + '-' + index} className="rounded-xl bg-white p-4 shadow-card">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-bold text-gray-800">{job.job.company.name}</h3>
-            <div className="flex items-center">
-              <span className="mr-2 text-xs text-gray-500">Considering:</span>
+        <div
+          key={job.id + '-' + index}
+          className='rounded-xl bg-white p-4 shadow-card'
+        >
+          <div className='mb-3 flex items-center justify-between'>
+            <h3 className='font-bold text-gray-800'>{job.job.company.name}</h3>
+            <div className='flex items-center'>
+              <span className='mr-2 text-xs text-gray-500'>Considering:</span>
               <input
-                type="checkbox"
+                type='checkbox'
                 checked={!job.noLongerConsidering}
-                onChange={() => handleJobConsideration(job.job.company.name, job.id, !job.noLongerConsidering)}
-                className="h-5 w-5 rounded text-primary focus:ring-primary"
+                onChange={() =>
+                  handleJobConsideration(
+                    job.job.company.name,
+                    job.id,
+                    !job.noLongerConsidering
+                  )
+                }
+                className='h-5 w-5 rounded text-primary focus:ring-primary'
               />
             </div>
           </div>
-          
+
           <a
             href={job.job.absolute_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mb-2 block font-medium text-primary hover:underline"
+            target='_blank'
+            rel='noopener noreferrer'
+            className='mb-2 block font-medium text-primary hover:underline'
           >
             {job.job.title}
           </a>
-          
+
           {job.job.location && (
-            <div className="mb-2 text-sm text-gray-600">
-              <span className="font-medium">Location:</span> {job.job.location}
+            <div className='mb-2 text-sm text-gray-600'>
+              <span className='font-medium'>Location:</span> {job.job.location}
             </div>
           )}
-          
-          <div className="mb-3 flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Applied Date:</label>
+
+          <div className='mb-3 flex flex-col'>
+            <label className='mb-1 text-sm font-medium text-gray-700'>
+              Applied Date:
+            </label>
             <input
-              type="date"
-              value={job.applicationDate || new Date().toISOString().split('T')[0]}
-              onChange={(e) => handleAppliedDateChange(job.job.company.name, job.job.id, e.target.value)}
-              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+              type='date'
+              value={
+                job.applicationDate || new Date().toISOString().split('T')[0]
+              }
+              onChange={(e) =>
+                handleAppliedDateChange(
+                  job.job.company.name,
+                  job.job.id,
+                  e.target.value
+                )
+              }
+              className='rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'
             />
           </div>
-          
-          <div className="mb-3 flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Status:</label>
+
+          <div className='mb-3 flex flex-col'>
+            <label className='mb-1 text-sm font-medium text-gray-700'>
+              Status:
+            </label>
             <select
-              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
-              onChange={(e) => handleStatusChange(job.job.company.name, job.job.id, e.target.value as ApplicationStatus)}
+              className='rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'
+              onChange={(e) =>
+                handleStatusChange(
+                  job.job.company.name,
+                  job.job.id,
+                  e.target.value as ApplicationStatus
+                )
+              }
               value={job.status || ApplicationStatus.ACTIVE}
             >
               <option value={ApplicationStatus.ACTIVE}>Active</option>
@@ -111,37 +150,39 @@ const JobTable: React.FC<JobTableProps> = ({
               <option value={ApplicationStatus.INTERVIEW}>Interviewing</option>
             </select>
           </div>
-          
-          <div className="flex flex-col">
-            <label className="mb-1 text-sm font-medium text-gray-700">Notes:</label>
+
+          <div className='flex flex-col'>
+            <label className='mb-1 text-sm font-medium text-gray-700'>
+              Notes:
+            </label>
             <input
-              type="text"
-              placeholder="Add notes..."
-              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+              type='text'
+              placeholder='Add notes...'
+              className='rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'
             />
           </div>
         </div>
       ))}
     </div>
   </div>
-)
+);
 
 // Main Component
 const AppliedJobsComponent: React.FC = () => {
-  const [appliedJobs, setAppliedJobs] = useState<UserAppliedJobs[]>([])
-  const [sortOrder, setSortOrder] = useState<string>('')
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const [selectedTab, setSelectedTab] = useState<string>('tracking')
+  const [appliedJobs, setAppliedJobs] = useState<UserAppliedJobs[]>([]);
+  const [sortOrder, setSortOrder] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('tracking');
   const [appliedDateSortOrder, setAppliedDateSortOrder] = useState<
     'asc' | 'desc'
-  >('desc')
+  >('desc');
 
-  const { data } = useAppSelector((state) => state.applications)
+  const { data } = useAppSelector((state) => state.applications);
 
   useEffect(() => {
-    const jobsList = data?.jobs ? data.jobs : []
-    setAppliedJobs(jobsList)
-  }, [])
+    const jobsList = data?.jobs ? data.jobs : [];
+    setAppliedJobs(jobsList);
+  }, []);
 
   const filteredJobs = appliedJobs.filter(
     (appliedJob) =>
@@ -153,98 +194,98 @@ const AppliedJobsComponent: React.FC = () => {
         appliedJob.job.location
           .toLowerCase()
           .includes(searchQuery.toLowerCase()))
-  )
+  );
 
   const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
-    const dateA = new Date(a?.updatedAt).getTime()
-    const dateB = new Date(b?.updatedAt).getTime()
+    const dateA = new Date(a?.updatedAt).getTime();
+    const dateB = new Date(b?.updatedAt).getTime();
 
     const appliedDateSortOrderMultiplier =
-      appliedDateSortOrder === 'asc' ? 1 : -1
+      appliedDateSortOrder === 'asc' ? 1 : -1;
 
     if (sortOrder === 'newest') {
-      return dateB - dateA
+      return dateB - dateA;
     } else if (sortOrder === 'oldest') {
-      return dateA - dateB
+      return dateA - dateB;
     } else if (sortOrder === 'appliedDate') {
       if (a.applicationDate && b.applicationDate) {
         return (
           appliedDateSortOrderMultiplier *
           (new Date(a.applicationDate).getTime() -
             new Date(b.applicationDate).getTime())
-        )
+        );
       } else if (a.applicationDate) {
-        return -1
+        return -1;
       } else if (b.applicationDate) {
-        return 1
+        return 1;
       }
     }
-    return 0
-  })
+    return 0;
+  });
 
   const trackingJobs = sortedAndFilteredJobs.filter(
     (job) => !job.noLongerConsidering
-  )
+  );
   const noLongerConsideringJobs = sortedAndFilteredJobs.filter(
     (job) => job.noLongerConsidering
-  )
+  );
 
   const handleAppliedDateChange = (
     company: string,
     jobId: number,
     newDate: string
   ) => {
-    updateJobProperty(company, jobId, 'appliedDate', newDate)
+    updateJobProperty(company, jobId, 'appliedDate', newDate);
     setAppliedJobs((prevJobs) =>
       prevJobs.map((appliedJob) =>
         appliedJob.job.company.name === company && appliedJob.job.id === jobId
           ? { ...appliedJob, applicationDate: newDate }
           : appliedJob
       )
-    )
-  }
+    );
+  };
 
   const handleStatusChange = (
     company: string,
     jobId: number,
     status: ApplicationStatus
   ) => {
-    updateJobProperty(company, jobId, 'status', status)
+    updateJobProperty(company, jobId, 'status', status);
     setAppliedJobs((prevJobs) =>
       prevJobs.map((appliedJob) =>
         appliedJob.job.company.name === company && appliedJob.job.id === jobId
           ? { ...appliedJob, status }
           : appliedJob
       )
-    )
-  }
+    );
+  };
 
   const handleJobConsideration = (
     company: string,
     jobId: number,
     considering: boolean
   ) => {
-    updateJobProperty(company, jobId, 'considering', considering)
+    updateJobProperty(company, jobId, 'considering', considering);
     setAppliedJobs((prevJobs) =>
       prevJobs.map((appliedJob) =>
         appliedJob.job.company.name === company && appliedJob.job.id === jobId
           ? { ...appliedJob, noLongerConsidering: !considering }
           : appliedJob
       )
-    )
-  }
+    );
+  };
 
   const handleAppliedDateSort = () => {
-    const newSortOrder = appliedDateSortOrder === 'desc' ? 'asc' : 'desc'
-    setAppliedDateSortOrder(newSortOrder)
-    setSortOrder('appliedDate')
-  }
+    const newSortOrder = appliedDateSortOrder === 'desc' ? 'asc' : 'desc';
+    setAppliedDateSortOrder(newSortOrder);
+    setSortOrder('appliedDate');
+  };
 
   return (
-    <div className="container mx-auto rounded-xl bg-white p-6 shadow-card">
-      <h2 className="mb-6 flex items-center justify-center text-center text-3xl font-bold text-gray-800">
+    <div className='container mx-auto rounded-xl bg-white p-6 shadow-card'>
+      <h2 className='mb-6 flex items-center justify-center text-center text-3xl font-bold text-gray-800'>
         Applied Jobs
-        <span className="ml-2 inline-flex items-center justify-center rounded-full bg-neutral px-3 py-1 text-sm font-medium text-gray-700">
+        <span className='ml-2 inline-flex items-center justify-center rounded-full bg-neutral px-3 py-1 text-sm font-medium text-gray-700'>
           {appliedJobs.length}
         </span>
       </h2>
@@ -253,7 +294,7 @@ const AppliedJobsComponent: React.FC = () => {
         setSearchQuery={setSearchQuery}
         searchQuery={searchQuery}
       />
-      <div className="mb-6 mt-6 flex justify-center space-x-2">
+      <div className='mb-6 mt-6 flex justify-center space-x-2'>
         <button
           className={`rounded-xl px-6 py-3 font-medium transition-all ${
             selectedTab === 'tracking'
@@ -275,7 +316,7 @@ const AppliedJobsComponent: React.FC = () => {
           No Longer Considering
         </button>
       </div>
-      <div className="tab-content">
+      <div className='tab-content'>
         {selectedTab === 'tracking' ? (
           <JobTable
             jobs={trackingJobs}
@@ -297,7 +338,7 @@ const AppliedJobsComponent: React.FC = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AppliedJobsComponent
+export default AppliedJobsComponent;
