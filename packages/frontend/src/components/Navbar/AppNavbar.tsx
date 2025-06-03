@@ -90,31 +90,33 @@ const AppNavbar: React.FC = () => {
               </NavLink>
             </li>
           ))}
+          
+          {/* Show Dashboard link when authenticated */}
+          {isAuthenticated && (
+            <li>
+              <NavLink 
+                to="/profile"
+                className={({ isActive }) => 
+                  `rounded-xl px-3 py-2 font-medium transition-all duration-200 md:px-4 md:py-2 ${
+                    isActive 
+                      ? 'bg-primary text-white' 
+                      : 'text-gray-700 hover:bg-neutral'
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+            </li>
+          )}
+          
+          {/* Auth buttons */}
           {isLoading ? (
             <li className="ml-4 animate-pulse">
               <div className="h-10 w-24 rounded-xl bg-gray-200"></div>
             </li>
           ) : (
             <li className="ml-2">
-              {isAuthenticated ? (
-                <>
-                  <NavLink 
-                    to="/profile"
-                    className={({ isActive }) => 
-                      `rounded-xl px-3 py-2 font-medium transition-all duration-200 md:px-4 md:py-2 ${
-                        isActive 
-                          ? 'bg-primary text-white' 
-                          : 'text-gray-700 hover:bg-neutral'
-                      }`
-                    }
-                  >
-                    Dashboard
-                  </NavLink>
-                  <LogoutButton />
-                </>
-              ) : (
-                <LoginButton />
-              )}
+              {isAuthenticated ? <LogoutButton /> : <LoginButton />}
             </li>
           )}
         </ul>
@@ -143,6 +145,7 @@ const AppNavbar: React.FC = () => {
           
           {/* Mobile menu links */}
           <div className="flex flex-1 flex-col items-center justify-center space-y-4 p-4">
+            {/* Public links */}
             {links.map((link) => (
               <NavLink
                 key={link.name}
@@ -160,7 +163,9 @@ const AppNavbar: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
-            {isAuthenticated && (
+            
+            {/* Dashboard link (when authenticated) */}
+            {isAuthenticated && isPublicPage && (
               <NavLink
                 to="/profile"
                 end={true}
@@ -255,8 +260,9 @@ const AppNavbar: React.FC = () => {
             </div>
           )}
           
-          {/* Mobile menu links */}
+          {/* Mobile menu links - Protected routes */}
           <div className="flex flex-1 flex-col items-center justify-center space-y-4 p-4">
+            {/* Protected links */}
             {links.map((link) => (
               <NavLink
                 key={link.name}

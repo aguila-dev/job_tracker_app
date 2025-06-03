@@ -19,40 +19,111 @@ const JobTable: React.FC<JobTableProps> = ({
   handleAppliedDateSort,
   appliedDateSortOrder,
 }) => (
-  <table className="min-w-full overflow-hidden rounded-xl border-collapse text-sm shadow-card">
-    <thead>
-      <tr className="bg-neutral">
-        <th className="border-b p-3 text-left font-semibold text-gray-700">Company</th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">Job Title</th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">Location</th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">
-          <button 
-            className="flex items-center font-semibold text-gray-700 focus:outline-none" 
-            onClick={handleAppliedDateSort}
-          >
-            Applied Date
-            <span className="ml-1">
-              {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
-            </span>
-          </button>
-        </th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">Notes</th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">Status</th>
-        <th className="border-b p-3 text-left font-semibold text-gray-700">No Longer Considering</th>
-      </tr>
-    </thead>
-    <tbody>
+  <div className="overflow-x-auto">
+    {/* Desktop/Tablet View */}
+    <table className="hidden min-w-full overflow-hidden rounded-xl border-collapse text-sm shadow-card md:table">
+      <thead>
+        <tr className="bg-neutral">
+          <th className="border-b p-3 text-left font-semibold text-gray-700">Company</th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">Job Title</th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">Location</th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">
+            <button 
+              className="flex items-center font-semibold text-gray-700 focus:outline-none" 
+              onClick={handleAppliedDateSort}
+            >
+              Applied Date
+              <span className="ml-1">
+                {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
+              </span>
+            </button>
+          </th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">Notes</th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">Status</th>
+          <th className="border-b p-3 text-left font-semibold text-gray-700">No Longer Considering</th>
+        </tr>
+      </thead>
+      <tbody>
+        {jobs.map((job: UserAppliedJobs, index: number) => (
+          <JobRow
+            key={job.id + '-' + index}
+            job={job}
+            handleAppliedDateChange={handleAppliedDateChange}
+            handleStatusChange={handleStatusChange}
+            handleJobConsideration={handleJobConsideration}
+          />
+        ))}
+      </tbody>
+    </table>
+    
+    {/* Mobile View - Card-based layout */}
+    <div className="mt-4 grid grid-cols-1 gap-4 md:hidden">
       {jobs.map((job: UserAppliedJobs, index: number) => (
-        <JobRow
-          key={job.id + '-' + index}
-          job={job}
-          handleAppliedDateChange={handleAppliedDateChange}
-          handleStatusChange={handleStatusChange}
-          handleJobConsideration={handleJobConsideration}
-        />
+        <div key={job.id + '-' + index} className="rounded-xl bg-white p-4 shadow-card">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-bold text-gray-800">{job.job.company.name}</h3>
+            <div className="flex items-center">
+              <span className="mr-2 text-xs text-gray-500">Considering:</span>
+              <input
+                type="checkbox"
+                checked={!job.noLongerConsidering}
+                onChange={() => handleJobConsideration(job.job.company.name, job.id, !job.noLongerConsidering)}
+                className="h-5 w-5 rounded text-primary focus:ring-primary"
+              />
+            </div>
+          </div>
+          
+          <a
+            href={job.job.absolute_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-2 block font-medium text-primary hover:underline"
+          >
+            {job.job.title}
+          </a>
+          
+          {job.job.location && (
+            <div className="mb-2 text-sm text-gray-600">
+              <span className="font-medium">Location:</span> {job.job.location}
+            </div>
+          )}
+          
+          <div className="mb-3 flex flex-col">
+            <label className="mb-1 text-sm font-medium text-gray-700">Applied Date:</label>
+            <input
+              type="date"
+              value={job.applicationDate || new Date().toISOString().split('T')[0]}
+              onChange={(e) => handleAppliedDateChange(job.job.company.name, job.job.id, e.target.value)}
+              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            />
+          </div>
+          
+          <div className="mb-3 flex flex-col">
+            <label className="mb-1 text-sm font-medium text-gray-700">Status:</label>
+            <select
+              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+              onChange={(e) => handleStatusChange(job.job.company.name, job.job.id, e.target.value as ApplicationStatus)}
+              value={job.status || ApplicationStatus.ACTIVE}
+            >
+              <option value={ApplicationStatus.ACTIVE}>Active</option>
+              <option value={ApplicationStatus.PENDING}>Pending</option>
+              <option value={ApplicationStatus.REJECTED}>Rejected</option>
+              <option value={ApplicationStatus.INTERVIEW}>Interviewing</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col">
+            <label className="mb-1 text-sm font-medium text-gray-700">Notes:</label>
+            <input
+              type="text"
+              placeholder="Add notes..."
+              className="rounded-lg border-none bg-neutral px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            />
+          </div>
+        </div>
       ))}
-    </tbody>
-  </table>
+    </div>
+  </div>
 )
 
 // Main Component
