@@ -9,9 +9,9 @@ import { LayoutProps } from '../interface/ILayout'
 
 const ProtectedLayout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex h-screen flex-col md:flex-row">
+    <div className="flex h-screen flex-col bg-neutral md:flex-row">
       <Navbar navbarLinks={NAVBAR_LINKS} />
-      <main className="flex w-full flex-1 flex-col gap-4 p-4">{children}</main>
+      <main className="flex w-full flex-1 flex-col gap-6 overflow-y-auto p-6">{children}</main>
     </div>
   )
 }

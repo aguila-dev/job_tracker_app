@@ -38,20 +38,20 @@ const JobRow: React.FC<JobRowProps> = ({
       : job.applicationDate || date.toISOString().split('T')[0]
 
   return (
-    <tr>
-      <td className="border p-2">{company.name}</td>
-      <td className="border p-2">
+    <tr className="transition-colors hover:bg-neutral">
+      <td className="border-b p-3 font-medium">{company.name}</td>
+      <td className="border-b p-3">
         <a
           href={absolute_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="font-medium text-primary hover:underline"
         >
           {title}
         </a>
       </td>
-      <td className="border p-2">{location || ''}</td>
-      <td className="border p-2">
+      <td className="border-b p-3 text-gray-600">{location || ''}</td>
+      <td className="border-b p-3">
         <input
           title="Applied Date"
           type="date"
@@ -59,20 +59,20 @@ const JobRow: React.FC<JobRowProps> = ({
           onChange={(e) =>
             handleAppliedDateChange(company.name, id, e.target.value)
           }
-          className="w-full rounded border px-2 py-1"
+          className="rounded-lg border-none bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
         />
       </td>
-      <td className="border p-2">
+      <td className="border-b p-3">
         <input
           type="text"
           placeholder="Add notes..."
-          className="w-full rounded border px-2 py-1"
+          className="w-full rounded-lg border-none bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
         />
       </td>
-      <td className="border p-2">
+      <td className="border-b p-3">
         <select
           title="Application Status"
-          className="w-full rounded border px-2 py-1"
+          className="w-full rounded-lg border-none bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           onChange={handleStatusChangeLocal}
           value={status}
         >
@@ -82,13 +82,13 @@ const JobRow: React.FC<JobRowProps> = ({
           <option value={ApplicationStatus.INTERVIEW}>Interviewing</option>
         </select>
       </td>
-      <td className="border p-2 text-center">
+      <td className="border-b p-3 text-center">
         <input
           title="No Longer Considering"
           type="checkbox"
           checked={!consideringStatus}
           onChange={handleConsiderationChange}
-          className="scale-125 transform"
+          className="h-5 w-5 rounded text-primary focus:ring-primary"
         />
       </td>
     </tr>

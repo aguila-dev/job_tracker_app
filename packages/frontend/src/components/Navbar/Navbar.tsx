@@ -34,23 +34,24 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
   }
 
   return (
-    <nav className="dark-green z-50 p-4 font-semibold text-slate-50 md:w-64">
+    <nav className="z-50 bg-white p-6 shadow-card md:w-64 md:rounded-r-xl">
       {/* Hamburger Icon */}
       <div className="flex max-h-16 justify-end md:hidden">
         <button
           type="button"
           onClick={handleMenuToggle}
-          className="z-50 flex h-12 w-12 items-center justify-center text-3xl text-black focus:outline-none"
+          className="z-50 flex h-12 w-12 items-center justify-center rounded-full bg-neutral text-xl text-light-text transition-colors hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
         >
           {isMenuOpen ? <span>&times;</span> : <span>&#9776;</span>}
         </button>
       </div>
       {/* Fullscreen Menu for Mobile */}
       <div
-        className={`fixed inset-0 flex flex-col items-center justify-center bg-zinc-700 transition-opacity duration-300 ${
+        className={`fixed inset-0 flex flex-col items-center justify-center bg-white transition-all duration-300 ${
           isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0'
         } z-40`}
       >
+        <div className="mb-8 text-2xl font-bold text-primary">Job Tracker</div>
         {navbarLinks
           .filter((link) =>
             user && user.email ? link.active : !link.requiresAuth
@@ -60,18 +61,22 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
               link.active && (
                 <p
                   key={link.name}
-                  className="cursor-pointer py-4 text-xl hover:opacity-75"
+                  className="my-2 cursor-pointer rounded-xl px-8 py-3 text-lg font-medium text-gray-800 transition-all hover:bg-neutral"
                   onClick={() => handleClickLink(link.path)}
                 >
                   {link.name}
                 </p>
               )
           )}
+        <div className="mt-8">
+          <LogoutButton />
+        </div>
       </div>
 
       {/* Desktop Menu */}
-      <div className="hidden h-full flex-1 justify-between md:flex md:flex-col md:gap-4">
-        <div className="flex flex-col gap-4">
+      <div className="hidden h-full flex-1 justify-between md:flex md:flex-col md:gap-6">
+        <div className="flex flex-col gap-2">
+          <div className="mb-6 text-xl font-bold text-primary">Job Tracker</div>
           {navbarLinks
             .filter((link) =>
               user && user.email ? link.active : !link.requiresAuth
@@ -82,11 +87,12 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
                   <NavLink
                     key={link.name}
                     to={link.path}
+                    end={true}
                     className={({ isActive }) =>
-                      `w-full rounded-lg px-4 py-2 text-center text-black transition-all duration-300 ease-in-out hover:cursor-pointer ${
+                      `w-full rounded-xl px-4 py-3 text-center font-medium transition-all duration-200 ease-in-out hover:cursor-pointer ${
                         isActive
-                          ? 'bg-slate-400 bg-opacity-90'
-                          : 'hover:bg-slate-300 hover:bg-opacity-65'
+                          ? 'bg-primary text-white'
+                          : 'text-gray-700 hover:bg-neutral'
                       }`
                     }
                   >
@@ -95,15 +101,9 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
                 )
             )}
         </div>
-        <LogoutButton />
-        {/* <button
-          type="button"
-          onClick={handleLogout}
-          // to='/auth'
-          className="w-full rounded-lg px-4 py-2 text-center text-black transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-slate-300 hover:bg-opacity-65"
-        >
-          Logout
-        </button> */}
+        <div className="mt-auto">
+          <LogoutButton />
+        </div>
       </div>
     </nav>
   )

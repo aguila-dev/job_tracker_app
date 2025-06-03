@@ -32,7 +32,8 @@ export const getActiveJobApplications = async (req: Request, res: Response) => {
     console.log('fetching active applications', data);
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch active applications' });
+    console.error('Error fetching active applications:', error);
+    res.status(500).json({ message: 'Failed to fetch active applications' });
   }
 };
 
@@ -57,7 +58,8 @@ export const getNoLongerConsideringApplications = async (
     const data = getPagingData(count, applications, page, pageSize);
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch applications' });
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ message: 'Failed to fetch applications' });
   }
 };
 
@@ -83,6 +85,7 @@ export const createJobApplication = async (
     console.log('application', application);
     res.status(201).json(application);
   } catch (err) {
+    console.error('Error creating job application:', err);
     res.status(500).json({ message: 'Failed to create job application' });
   }
 };
@@ -100,6 +103,7 @@ export const updateJobApplication = async (req: Request, res: Response) => {
     await application.save();
     res.json(application);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update application' });
+    console.error('Error updating application:', error);
+    res.status(500).json({ message: 'Failed to update application' });
   }
 };

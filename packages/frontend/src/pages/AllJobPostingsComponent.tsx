@@ -192,16 +192,18 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   }
   console.log({ isLoading, isError, isTodaysJobs })
   return (
-    <div className="w-full px-4">
-      <h2 className="flex items-center justify-center text-center text-2xl font-semibold">
-        Job Listings for{' '}
-        {isTodaysJobs
-          ? 'Today '
-          : jobs[0]?.company.name
-            ? jobs[0]?.company.name
-            : ''}{' '}
-        <span className="inline-flex items-center justify-center">
-          &#40;
+    <div className="w-full rounded-xl bg-white p-6 shadow-card">
+      <h2 className="mb-6 flex items-center justify-center text-center text-3xl font-bold text-gray-800">
+        Job Listings
+        {' '}
+        <span className="ml-2 text-primary">
+          {isTodaysJobs
+            ? 'Today'
+            : jobs[0]?.company.name
+              ? jobs[0]?.company.name
+              : ''}
+        </span>
+        <span className="ml-2 inline-flex items-center justify-center rounded-full bg-neutral px-3 py-1 text-sm font-medium text-gray-700">
           {jobs?.length ? (
             data?.count
           ) : isLoading ? (
@@ -211,14 +213,18 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
           ) : (
             0
           )}
-          &#41;
         </span>
       </h2>
 
       {isError ? (
         <div className="flex items-start justify-center pt-4">
-          <div className="rounded-lg bg-white p-4 text-red-600 shadow-lg">
-            Network error, sorry. Please try again later.
+          <div className="rounded-xl bg-red-50 p-6 text-red-600 shadow-card">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="mr-3 h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="font-medium">Network error. Please try again later.</p>
+            </div>
           </div>
         </div>
       ) : (
@@ -233,15 +239,15 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         </>
       )}
       <div className="jobs-list-container overflow-x-auto">
-        <table className="mt-4 min-w-full border-collapse text-xs sm:text-base">
+        <table className="mt-6 min-w-full overflow-hidden rounded-xl border-collapse text-xs shadow-card sm:text-base">
           <thead>
-            <tr className="bg-[#f4f4f4] dark:bg-slate-700">
-              <th className="border p-2">Company</th>
-              <th className="border p-2">Title</th>
-              <th className="border p-2">Last Updated</th>
-              <th className="border p-2">Location</th>
-              <th className="border p-2">Job Link</th>
-              <th className="border p-2">Applied</th>
+            <tr className="bg-neutral">
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Company</th>
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Title</th>
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Last Updated</th>
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Location</th>
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Job Link</th>
+              <th className="border-b p-3 text-left font-semibold text-gray-700">Applied</th>
             </tr>
           </thead>
           <tbody>
@@ -260,27 +266,33 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         </table>
       </div>
       {/* Pagination section for company postings */}
-      <section className="mt-4 flex flex-col items-center justify-center">
-        <div>
+      <section className="mt-6 flex flex-col items-center justify-center">
+        <div className="flex items-center space-x-4">
           <button
             type="button"
-            className="mx-2 rounded bg-gray-200 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
+            className="flex items-center rounded-xl bg-white px-5 py-3 font-medium text-primary shadow-sm transition-all hover:bg-neutral disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
             disabled={currentPage === 1}
             onClick={() => handlePaginatedPage('prev')}
           >
+            <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
             Previous
           </button>
+          <div className="rounded-xl bg-white px-4 py-2 font-medium shadow-sm">
+            Page {currentPage} of {totalPages}
+          </div>
           <button
             type="button"
-            className="mx-2 rounded bg-gray-200 px-4 py-2 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center rounded-xl bg-white px-5 py-3 font-medium text-primary shadow-sm transition-all hover:bg-neutral disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white"
             disabled={currentPage === totalPages}
             onClick={() => handlePaginatedPage('next')}
           >
             Next
+            <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
           </button>
-        </div>
-        <div>
-          {currentPage}/{totalPages}
         </div>
       </section>
 

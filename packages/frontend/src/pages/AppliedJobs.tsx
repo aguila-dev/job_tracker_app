@@ -19,20 +19,26 @@ const JobTable: React.FC<JobTableProps> = ({
   handleAppliedDateSort,
   appliedDateSortOrder,
 }) => (
-  <table className="min-w-full border-collapse text-sm">
+  <table className="min-w-full overflow-hidden rounded-xl border-collapse text-sm shadow-card">
     <thead>
-      <tr className="bg-[#f4f4f4] dark:bg-slate-700">
-        <th className="border p-2">Company</th>
-        <th className="border p-2">Job Title</th>
-        <th className="border p-2">Location</th>
-        <th className="border p-2">
-          <span className="cursor-pointer" onClick={handleAppliedDateSort}>
-            Applied Date {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
-          </span>
+      <tr className="bg-neutral">
+        <th className="border-b p-3 text-left font-semibold text-gray-700">Company</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">Job Title</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">Location</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">
+          <button 
+            className="flex items-center font-semibold text-gray-700 focus:outline-none" 
+            onClick={handleAppliedDateSort}
+          >
+            Applied Date
+            <span className="ml-1">
+              {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
+            </span>
+          </button>
         </th>
-        <th className="border p-2">Notes</th>
-        <th className="border p-2">Status</th>
-        <th className="border p-2">No Longer Considering</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">Notes</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">Status</th>
+        <th className="border-b p-3 text-left font-semibold text-gray-700">No Longer Considering</th>
       </tr>
     </thead>
     <tbody>
@@ -164,31 +170,34 @@ const AppliedJobsComponent: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto rounded-lg bg-white p-4 shadow-md dark:bg-slate-600">
-      <h2 className="mb-4 text-center text-2xl font-semibold">
-        Applied Jobs {appliedJobs.length > 0 && `(${appliedJobs.length})`}
+    <div className="container mx-auto rounded-xl bg-white p-6 shadow-card">
+      <h2 className="mb-6 flex items-center justify-center text-center text-3xl font-bold text-gray-800">
+        Applied Jobs
+        <span className="ml-2 inline-flex items-center justify-center rounded-full bg-neutral px-3 py-1 text-sm font-medium text-gray-700">
+          {appliedJobs.length}
+        </span>
       </h2>
       <Search
         setSortOrder={setSortOrder}
         setSearchQuery={setSearchQuery}
         searchQuery={searchQuery}
       />
-      <div className="tabs mb-4 flex justify-center">
+      <div className="mb-6 mt-6 flex justify-center space-x-2">
         <button
-          className={`tab rounded-t-lg px-4 py-2 ${
+          className={`rounded-xl px-6 py-3 font-medium transition-all ${
             selectedTab === 'tracking'
-              ? 'border-b-2 border-transparent bg-white dark:bg-slate-400'
-              : 'bg-slate-100 dark:bg-slate-700'
+              ? 'bg-primary text-white shadow-md'
+              : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
           }`}
           onClick={() => setSelectedTab('tracking')}
         >
           Job Tracking
         </button>
         <button
-          className={`tab rounded-t-lg px-4 py-2 ${
+          className={`rounded-xl px-6 py-3 font-medium transition-all ${
             selectedTab === 'noLongerConsidering'
-              ? 'border-b-2 border-transparent bg-white dark:bg-slate-400'
-              : 'bg-slate-100 dark:bg-slate-700'
+              ? 'bg-primary text-white shadow-md'
+              : 'bg-white text-gray-600 shadow-sm hover:bg-neutral'
           }`}
           onClick={() => setSelectedTab('noLongerConsidering')}
         >

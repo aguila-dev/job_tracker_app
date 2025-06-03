@@ -42,43 +42,43 @@ const SinglePostingRow: React.FC<{
   return (
     <tr
       onClick={onRowClick}
-      className={cn('cursor-pointer', {
-        'bg-green-200': job?.applied,
-        'hover:bg-gray-100 dark:hover:bg-gray-700': !job?.applied,
+      className={cn('cursor-pointer transition-colors duration-150', {
+        'bg-green-100 hover:bg-green-200': job?.applied,
+        'hover:bg-neutral': !job?.applied,
       })}
     >
       {job?.company ? (
-        <td className="border-[1px] border-solid border-[#ddd] p-2">
+        <td className="border-b p-3 font-medium">
           {job.company.name}
         </td>
       ) : null}
-      <td className="border-[1px] border-solid border-[#ddd] p-2">
+      <td className="border-b p-3 font-medium">
         {job.title}
       </td>
-      <td className="border-[1px] border-solid border-[#ddd] p-2">
+      <td className="border-b p-3 text-gray-600">
         {formattedDate}
       </td>
-      <td className="border-[1px] border-solid border-[#ddd] p-2">
+      <td className="border-b p-3 text-gray-600">
         {job?.location}
       </td>
-      <td className="border-[1px] border-solid border-[#ddd] p-2">
+      <td className="border-b p-3">
         <a
           href={job.absoluteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="rounded bg-primary px-3 py-1 text-white hover:bg-opacity-90 transition-all"
         >
-          Link
+          View
         </a>
       </td>
-      <td className="border-[1px] border-solid border-[#ddd] p-2">
-        <label className="flex items-center space-x-2" />
+      <td className="border-b p-3">
+        <label className="flex items-center justify-center" />
         <input
           type="checkbox"
           title="Applied"
           checked={job.applied}
           onClick={handleCheckboxClick}
-          className="form-checkbox h-5 w-5 text-blue-600"
+          className="h-5 w-5 rounded text-primary focus:ring-primary"
           readOnly // might need another solution
         />
       </td>

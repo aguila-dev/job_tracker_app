@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { API } from './constants';
 import { corsAllowList } from 'config/allowList';
 
@@ -24,6 +25,9 @@ app.use(cors({ origin: allowList, credentials: true }));
 /**
  * Middleware
  */
+// Add security headers
+app.use(helmet());
+
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
@@ -36,8 +40,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true, // Set to true if using https
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: 'lax', // Adds CSRF protection
     },
   })
 );

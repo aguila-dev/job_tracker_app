@@ -6,6 +6,7 @@ import AppliedJobsComponent from '@/pages/AppliedJobs'
 import Contact from '@/pages/Contact'
 import Home from '@/pages/Home'
 import NonAuthHome from '@/pages/NonAuthHome'
+import NotFound from '@/pages/NotFound'
 import { Route, Routes } from 'react-router-dom'
 
 import { useSyncUser } from '@/hooks/useSyncUser'
@@ -81,7 +82,14 @@ const AppRoutes = () => {
           }
         />
       </Route>
-      <Route path="/*" element={<div> Error 404</div>} />
+      <Route 
+        path="*" 
+        element={
+          <HomeLayout>
+            <NotFound />
+          </HomeLayout>
+        } 
+      />
     </Routes>
   )
 }

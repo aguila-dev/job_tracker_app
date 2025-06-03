@@ -38,7 +38,7 @@ const CONFIG = {
 
 const SECURE = {
   SECRET: process.env.JWT_SECRET,
-  SALT: 5,
+  SALT: 12, // Increased from 5 to 12 for better security
 };
 
 const AUTH_COOKIES = {
