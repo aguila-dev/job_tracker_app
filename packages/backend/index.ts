@@ -2,7 +2,7 @@ require('dotenv').config();
 import {
   populateDatabase,
   updateDatabaseJobListings,
-} from '@services/populateDatabase';
+} from '@services/populateDatabaseRefactored';
 import cron from 'node-cron';
 import app from './app';
 import { db } from './db';
