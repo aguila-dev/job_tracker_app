@@ -6,8 +6,8 @@ import * as authController from '../controllers/authController';
 ////////////////////////////
 //// * Current routes * ////
 ////////////////////////////
-router.post('/login', checkJwt, authController.loginAuth0User);
-router.post('/signup', checkJwt, authController.signupAuth0User);
+router.post('/login', authController.loginAuth0User);
+router.post('/signup', authController.signupAuth0User);
 router.post('/logout', checkJwt, authController.logoutAuth0User);
 router.get('/checkUser', checkJwt, authController.checkUser);
 

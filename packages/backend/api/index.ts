@@ -13,9 +13,9 @@ router.use(checkJwt);
 router.use('/jobs', jobsRoute);
 router.use('/applications', applicationsRoute);
 router.use('/companies', companiesRoute);
-router.use('/public-key', (req: Request, res: Response) => {
-  res.send(publicKey);
-});
+// router.use('/public-key', (req: Request, res: Response) => {
+//   res.send(publicKey);
+// });
 
 // admin
 router.use('/admin', adminRoutes);
