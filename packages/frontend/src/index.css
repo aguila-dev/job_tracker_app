@@ -20,10 +20,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
+/* #root {
   max-height: 100vh;
   overflow-y: hidden;
-}
+} */
 
 .dark-green {
   background-color: var(--darkgreen);
